@@ -1,6 +1,6 @@
 #!/bin/bash
 readonly PROJECT_ID=${1}
-readonly provider=""google-v2
+readonly provider="google-v2"
 readonly logging=${2}
 readonly machine_type="n1-standard-2"
 readonly in_tenx_bam=${3}
@@ -39,7 +39,7 @@ do
     --env SNPEFFDB=${snpEffDB} \
     --input TENX_FA=${tenx_fa} \
     --input TENX_FAI="${tenx_fa}.fai" \
-    --output OUTPUT_FILES="${outdir}/${barcode}.*"
+    --output OUTPUT_FILES="${outdir}/${barcode}.*" \
     --preemptible "
    echo $cmd
    $cmd
