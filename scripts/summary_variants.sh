@@ -16,15 +16,29 @@ do
 	name_wo_ext=$(echo "$fname" | cut -d'.' -f1)
 	num_vars=$(grep "Number_of_variants_before_filter" ${f}|cut -f 2 -d","| tr -d '[:space:]')
 	del=$(grep "DEL" ${f}|cut -f 2 -d","| tr -d '[:space:]')
-	ins=$(grep INS ${f}|cut -f 2 -d","| tr -d '[:space:]')
-	snps=$(grep SNP ${f}|cut -f 2 -d","| tr -d '[:space:]')
-	line=$(grep Number_of_known_variants ${f})
+	ins=$(grep "INS" ${f}|cut -f 2 -d","| tr -d '[:space:]')
+	snps=$(grep "SNP" ${f}|cut -f 2 -d","| tr -d '[:space:]')
+	if [ -z $del ];then
+		del="0"
+	fi
+   	if [ -z $ins ];then
+                ins="0"
+        fi
+	if [ -z $snps ];then
+                snps="0"
+        fi
+
+
+	line=$(grep "Number_of_known_variants" ${f})
 	perc_snp=$(echo $line|cut -f 3 -d","|cut -f 1 -d"%"| tr -d '[:space:]')
 	dbsnps=$(echo $line|cut -f 2 -d","| tr -d '[:space:]')
 	newline=($name_wo_ext $num_vars ${del} ${ins} ${snps} $dbsnps $perc_snp)
 	y=()
 	for a in ${annots[@]};do
 		x=$(grep $a $f|cut -f 3 -d","|cut -f 1 -d"%"|tr -d '[:space:]')
+		if [ -z $x ];then
+			x=0
+		fi
 		y+=($x)
 	done
 	newline=(${newline[@]} ${y[@]})

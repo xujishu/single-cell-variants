@@ -2,7 +2,7 @@
 readonly PROJECT_ID=${1}
 readonly provider="google-v2"
 readonly logging=${2}
-readonly machine_type="n1-standard-2"
+readonly machine_type="n1-standard-1"
 readonly in_tenx_bam=${3}
 readonly tenx_sample=${4}
 readonly tenx_fa=${5}
@@ -23,9 +23,10 @@ do
   genes=$(echo $line|awk '{print $2}')
   if [[ $genes -gt 1000 && ${counts%.*} -gt 10000 ]];then
    outdir=${output}/${tenx_sample}/${barcode}
-   anntvcf="${outdir}/${barcode}.annt.bcf.csi"
+   anntvcf="${outdir}/${barcode}.bcf"
+   outvcf="${outdir}/${barcode}.filtered.bcf"
    echo $anntvcf
-   if [[ ! `gsutil ls "${anntvcf}"` ]];then 
+   if [[  `gsutil ls "${anntvcf}"` ]];then 
    cmd="dsub \
     --project ${PROJECT_ID} \
     --zones "us-central1-*" \
@@ -35,16 +36,13 @@ do
     --boot-disk-size 50 \
     --machine-type ${machine_type} \
     --image ${DOCKER} \
-    --script ${script} \
     --env TENX_SAMPLE=${tenx_sample} \
-    --input IN_TENX_BAM=${in_tenx_bam} \
-    --input IN_TENX_BAM_INDEX=${in_tenx_bam}.bai \
     --env BARCODE=${barcode} \
-    --env DBSNP=${dbsnp} \
-    --env SNPEFFDB=${snpEffDB} \
-    --input TENX_FA=${tenx_fa} \
-    --input TENX_FAI="${tenx_fa}.fai" \
-    --output OUTPUT_FILES="${outdir}/${barcode}.*" \
+    --input IN_VCF=${anntvcf} \
+    --input IN_VCF_IDX=${anntvcf}.csi \
+    --output OUT_VCF=${outvcf} \
+    --output OUT_VCF_IDX=${outvcf}.csi \
+    --script ${script}
     --preemptible "
    echo $cmd
    $cmd

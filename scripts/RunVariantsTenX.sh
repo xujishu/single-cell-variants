@@ -23,7 +23,7 @@ echo  "${samplename} ${barcode}" >${output_dir}/${barcode}_RG.txt
 # raw variants call
 cmd="bcftools mpileup -Ou -S ${output_dir}/${barcode}_RG.txt -f ${tenx_fa} ${output_dir}/${barcode}.dedup.bam|bcftools call -mv -Ob -o ${output_dir}/${barcode}.bcf"
 echo $cmd
-bcftools mpileup -Ou -S ${output_dir}/${barcode}_RG.txt -f ${tenx_fa} ${output_dir}/${barcode}.dedup.bam|bcftools call -mv -Ob -o ${output_dir}/${barcode}.bcf
+bcftools mpileup  -Ou -S ${output_dir}/${barcode}_RG.txt -a "FORMAT/DP,FORMAT/AD" -f ${tenx_fa} ${output_dir}/${barcode}.dedup.bam|bcftools call -mv -Ou|bcftools filter -s "LOWDP" -i "INFO/DP>3"  -Ob -o ${output_dir}/${barcode}.bcf
 bcftools index ${output_dir}/${barcode}.bcf
 # snpEff annotate variants
 echo "annotation....."
